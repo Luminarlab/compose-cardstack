@@ -11,11 +11,9 @@ import com.luminarlab.ui.cardstack.modifier.moveTo
 import com.luminarlab.ui.cardstack.modifier.visible
 
 @Composable
-fun SwipeableCard(
+fun CardStackScope.SwipeableCard(
     modifier: Modifier = Modifier,
-    currentIndex: Int,
     index: Int,
-    cardStackController: CardStackController,
     content: @Composable () -> Unit
 ) {
     Box(

@@ -1,21 +1,12 @@
 package com.luminarlab.ui.cardstack
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ThumbDownAlt
-import androidx.compose.material.icons.filled.ThumbUpAlt
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.luminarlab.ui.cardstack.modifier.draggableStack
-import com.luminarlab.ui.cardstack.modifier.moveTo
-import com.luminarlab.ui.cardstack.modifier.visible
 
 /**
  * A stack of cards that can be dragged.
@@ -36,16 +27,19 @@ import com.luminarlab.ui.cardstack.modifier.visible
 fun <T> CardStack(
     modifier: Modifier = Modifier,
     items: MutableList<T>,
-    cardStackController: CardStackController,
     thresholdConfig: (Float, Float) -> ThresholdConfig = { _, _ -> FractionalThreshold(0.2f) },
     velocityThreshold: Dp = 125.dp,
-    enableButtons: Boolean = false,
     onSwipe: (item: T, index: Int, direction: Swipe.Direction) -> Unit = { _, _, _ -> },
     onEmptyStack: (lastItem: T) -> Unit = {},
-    content: @Composable (item: T, itemIndex: Int, currentIndex: Int) -> Unit
+    buttons: @Composable CardStackScope.() -> Unit = {},
+    content: @Composable CardStackScope.(item: T, index: Int) -> Unit
 ) {
 
     var currentIndex by remember { mutableStateOf(items.size - 1) }
+
+    val cardStackController = rememberCardStackController()
+
+    val scope = CardStackScope(currentIndex, cardStackController)
 
     if (currentIndex == -1) {
         onEmptyStack(items.last())
@@ -59,36 +53,17 @@ fun <T> CardStack(
 
 
     ConstraintLayout(modifier = modifier.fillMaxSize().padding(20.dp)) {
-        val (buttons, stack) = createRefs()
+        val (buttonsRef, stack) = createRefs()
 
-        if (enableButtons) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(buttons) {
-                        bottom.linkTo(parent.bottom)
-                        top.linkTo(stack.bottom)
-                    },
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                FloatingActionButton(
-                    onClick = { if (currentIndex >= 0) cardStackController.swipeLeft() },
-                    backgroundColor = Color.White,
-                    elevation = FloatingActionButtonDefaults.elevation()
-                ) {
-                    Icon(Icons.Filled.ThumbDownAlt, tint = Color.Red)
-                }
-                Spacer(modifier = Modifier.width(70.dp))
-                FloatingActionButton(
-                    onClick = { if (currentIndex >= 0) cardStackController.swipeRight() },
-                    backgroundColor = Color.White,
-                    elevation = FloatingActionButtonDefaults.elevation()
-                ) {
-                    Icon(Icons.Filled.ThumbUpAlt, tint = Color.Green)
-                }
-            }
+
+        Box(modifier = Modifier
+            .constrainAs(buttonsRef) {
+                this.bottom.linkTo(parent.bottom)
+                top.linkTo(stack.bottom)
+            }) {
+            scope.buttons()
         }
+
 
         Box(modifier = Modifier
             .constrainAs(stack) {
@@ -102,8 +77,8 @@ fun <T> CardStack(
             .fillMaxHeight(0.8f)
         ) {
             items.asReversed().forEachIndexed { index, item ->
-                content(item, index, currentIndex)
 
+                scope.content(item, index)
             }
         }
     }

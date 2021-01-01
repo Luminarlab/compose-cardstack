@@ -1,4 +1,4 @@
-package com.luminarlab.ui.cardstack
+package com.luminarlab.ui.cardstack.base
 
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.asDisposableClock
@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.unit.dp
+import com.luminarlab.ui.cardstack.Swipe
 
 /**
  * Controller of the [draggableStack] modifier.
