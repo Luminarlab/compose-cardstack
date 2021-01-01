@@ -1,6 +1,5 @@
 package com.luminarlab.ui.cardstack
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -9,18 +8,14 @@ import androidx.compose.material.icons.filled.ThumbDownAlt
 import androidx.compose.material.icons.filled.ThumbUpAlt
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import dev.chrisbanes.accompanist.coil.CoilImage
-import kotlin.math.roundToInt
+import com.luminarlab.ui.cardstack.modifier.draggableStack
+import com.luminarlab.ui.cardstack.modifier.moveTo
+import com.luminarlab.ui.cardstack.modifier.visible
 
 /**
  * A stack of cards that can be dragged.
@@ -41,12 +36,13 @@ import kotlin.math.roundToInt
 fun <T> CardStack(
     modifier: Modifier = Modifier,
     items: MutableList<T>,
+    cardStackController: CardStackController,
     thresholdConfig: (Float, Float) -> ThresholdConfig = { _, _ -> FractionalThreshold(0.2f) },
     velocityThreshold: Dp = 125.dp,
     enableButtons: Boolean = false,
     onSwipe: (item: T, index: Int, direction: Swipe.Direction) -> Unit = { _, _, _ -> },
     onEmptyStack: (lastItem: T) -> Unit = {},
-    content: @Composable (item: T) -> Unit
+    content: @Composable (item: T, itemIndex: Int, currentIndex: Int) -> Unit
 ) {
 
     var currentIndex by remember { mutableStateOf(items.size - 1) }
@@ -55,7 +51,6 @@ fun <T> CardStack(
         onEmptyStack(items.last())
     }
 
-    val cardStackController = rememberCardStackController()
 
     cardStackController.onSwipe = { direction ->
         onSwipe(items[currentIndex], items.size - currentIndex, direction)
@@ -107,102 +102,11 @@ fun <T> CardStack(
             .fillMaxHeight(0.8f)
         ) {
             items.asReversed().forEachIndexed { index, item ->
-                Card(
-                    modifier = Modifier
-                        .moveTo(
-                            x = if (index == currentIndex) cardStackController.offsetX.value else 0f,
-                            y = if (index == currentIndex) cardStackController.offsetY.value else 0f
-                        )
-                        .visible(visible = index == currentIndex || index == currentIndex - 1)
-                        .graphicsLayer(
-                            rotationZ = if (index == currentIndex) cardStackController.rotation.value else 0f,
-                            scaleX = if (index < currentIndex) cardStackController.scale.value else 1f,
-                            scaleY = if (index < currentIndex) cardStackController.scale.value else 1f
-                        )
-                        .shadow(4.dp, RoundedCornerShape(10.dp))
-                ) { content(item) }
+                content(item, index, currentIndex)
+
             }
         }
     }
 }
 
-@Composable
-fun Card(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    Box(modifier = modifier) {
-        content()
-    }
-}
-
-@Composable
-fun CardContent(modifier: Modifier = Modifier, item: Item) {
-    Box(modifier = modifier) {
-        if (item.url != null) {
-            CoilImage(
-                data = item.url,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(10.dp)),
-            )
-        }
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(10.dp)
-        ) {
-            Text(
-                text = item.text,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 25.sp,
-                modifier = Modifier.clickable(
-                    onClick = {},
-                    indication = null
-                ) // disable the highlight of the text when dragging
-            )
-            Text(
-                text = item.subText,
-                color = Color.White,
-                fontSize = 20.sp,
-                modifier = Modifier.clickable(
-                    onClick = {},
-                    indication = null
-                ) // disable the highlight of the text when dragging
-            )
-        }
-    }
-}
-
-
-data class Item(
-    val url: String? = null,
-    val text: String = "",
-    val subText: String = ""
-)
-
-fun Modifier.moveTo(
-    x: Float,
-    y: Float
-) = this.then(Modifier.layout { measurable, constraints ->
-    val placeable = measurable.measure(constraints)
-    layout(placeable.width, placeable.height) {
-        placeable.placeRelative(x.roundToInt(), y.roundToInt())
-    }
-})
-
-fun Modifier.visible(
-    visible: Boolean = true
-) = this.then(Modifier.layout { measurable, constraints ->
-    val placeable = measurable.measure(constraints)
-    if (visible) {
-        layout(placeable.width, placeable.height) {
-            placeable.placeRelative(0, 0)
-        }
-    } else {
-        layout(0, 0) {}
-    }
-})
 
