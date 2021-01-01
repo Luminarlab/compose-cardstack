@@ -1,4 +1,4 @@
-package com.luminarlab.ui.cardstack
+package com.luminarlab.ui.cardstack.base
 
 object Swipe {
     enum class Direction {

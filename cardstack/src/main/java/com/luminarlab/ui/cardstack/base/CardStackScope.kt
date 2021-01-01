@@ -1,4 +1,6 @@
-package com.luminarlab.ui.cardstack
+package com.luminarlab.ui.cardstack.base
+
+import com.luminarlab.ui.cardstack.base.CardStackController
 
 /**
  * A scope that gives information about the current card stack

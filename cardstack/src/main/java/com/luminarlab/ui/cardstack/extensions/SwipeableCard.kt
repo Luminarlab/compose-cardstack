@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import com.luminarlab.ui.cardstack.base.CardStackScope
 import com.luminarlab.ui.cardstack.modifier.moveTo
 import com.luminarlab.ui.cardstack.modifier.visible
 

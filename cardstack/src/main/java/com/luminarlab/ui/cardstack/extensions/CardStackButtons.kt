@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.luminarlab.ui.cardstack.base.CardStackScope
 
 /**
  * Von Yannick Knoll am 2021-01-01 erstellt.
