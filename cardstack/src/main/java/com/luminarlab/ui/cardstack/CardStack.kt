@@ -38,32 +38,30 @@ import kotlin.math.roundToInt
  */
 @ExperimentalMaterialApi
 @Composable
-fun CardStack(
+fun <T> CardStack(
     modifier: Modifier = Modifier,
-    items: MutableList<Item>,
+    items: MutableList<T>,
     thresholdConfig: (Float, Float) -> ThresholdConfig = { _, _ -> FractionalThreshold(0.2f) },
     velocityThreshold: Dp = 125.dp,
     enableButtons: Boolean = false,
-    onSwipeLeft: (item: Item) -> Unit = {},
-    onSwipeRight: (item: Item) -> Unit = {},
-    onEmptyStack: (lastItem: Item) -> Unit = {}
+    onSwipe: (item: T, index: Int, direction: Swipe.Direction) -> Unit = { _, _, _ -> },
+    onEmptyStack: (lastItem: T) -> Unit = {},
+    content: @Composable (item: T) -> Unit
 ) {
 
-    var i by remember { mutableStateOf(items.size - 1) }
+    var currentIndex by remember { mutableStateOf(items.size - 1) }
 
-    if (i == -1) {
+    if (currentIndex == -1) {
         onEmptyStack(items.last())
     }
 
     val cardStackController = rememberCardStackController()
-    cardStackController.onSwipeLeft = {
-        onSwipeLeft(items[i])
-        i--
+
+    cardStackController.onSwipe = { direction ->
+        onSwipe(items[currentIndex], items.size - currentIndex, direction)
+        currentIndex--
     }
-    cardStackController.onSwipeRight = {
-        onSwipeRight(items[i])
-        i--
-    }
+
 
     ConstraintLayout(modifier = modifier.fillMaxSize().padding(20.dp)) {
         val (buttons, stack) = createRefs()
@@ -80,7 +78,7 @@ fun CardStack(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FloatingActionButton(
-                    onClick = { if (i >= 0) cardStackController.swipeLeft() },
+                    onClick = { if (currentIndex >= 0) cardStackController.swipeLeft() },
                     backgroundColor = Color.White,
                     elevation = FloatingActionButtonDefaults.elevation()
                 ) {
@@ -88,7 +86,7 @@ fun CardStack(
                 }
                 Spacer(modifier = Modifier.width(70.dp))
                 FloatingActionButton(
-                    onClick = { if (i >= 0) cardStackController.swipeRight() },
+                    onClick = { if (currentIndex >= 0) cardStackController.swipeRight() },
                     backgroundColor = Color.White,
                     elevation = FloatingActionButtonDefaults.elevation()
                 ) {
@@ -112,18 +110,17 @@ fun CardStack(
                 Card(
                     modifier = Modifier
                         .moveTo(
-                            x = if (index == i) cardStackController.offsetX.value else 0f,
-                            y = if (index == i) cardStackController.offsetY.value else 0f
+                            x = if (index == currentIndex) cardStackController.offsetX.value else 0f,
+                            y = if (index == currentIndex) cardStackController.offsetY.value else 0f
                         )
-                        .visible(visible = index == i || index == i - 1)
+                        .visible(visible = index == currentIndex || index == currentIndex - 1)
                         .graphicsLayer(
-                            rotationZ = if (index == i) cardStackController.rotation.value else 0f,
-                            scaleX = if (index < i) cardStackController.scale.value else 1f,
-                            scaleY = if (index < i) cardStackController.scale.value else 1f
+                            rotationZ = if (index == currentIndex) cardStackController.rotation.value else 0f,
+                            scaleX = if (index < currentIndex) cardStackController.scale.value else 1f,
+                            scaleY = if (index < currentIndex) cardStackController.scale.value else 1f
                         )
-                        .shadow(4.dp, RoundedCornerShape(10.dp)),
-                    item
-                )
+                        .shadow(4.dp, RoundedCornerShape(10.dp))
+                ) { content(item) }
             }
         }
     }
@@ -132,11 +129,16 @@ fun CardStack(
 @Composable
 fun Card(
     modifier: Modifier = Modifier,
-    item: Item = Item()
+    content: @Composable () -> Unit
 ) {
-    Box(
-        modifier
-    ) {
+    Box(modifier = modifier) {
+        content()
+    }
+}
+
+@Composable
+fun CardContent(modifier: Modifier = Modifier, item: Item) {
+    Box(modifier = modifier) {
         if (item.url != null) {
             CoilImage(
                 data = item.url,
@@ -151,7 +153,7 @@ fun Card(
                 .align(Alignment.BottomStart)
                 .padding(10.dp)
         ) {
-            androidx.compose.material.Text(
+            Text(
                 text = item.text,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -161,7 +163,7 @@ fun Card(
                     indication = null
                 ) // disable the highlight of the text when dragging
             )
-            androidx.compose.material.Text(
+            Text(
                 text = item.subText,
                 color = Color.White,
                 fontSize = 20.sp,
@@ -173,6 +175,7 @@ fun Card(
         }
     }
 }
+
 
 data class Item(
     val url: String? = null,

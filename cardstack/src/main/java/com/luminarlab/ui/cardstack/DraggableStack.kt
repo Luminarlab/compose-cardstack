@@ -7,6 +7,7 @@ import androidx.compose.animation.core.AnimationClockObserver
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SwipeableConstants
+import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.ThresholdConfig
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -18,10 +19,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.gesture.DragObserver
 import androidx.compose.ui.gesture.rawDragGestureFilter
-import androidx.compose.ui.platform.AmbientDensity
-import androidx.compose.ui.platform.AnimationClockAmbient
-import androidx.compose.ui.platform.ConfigurationAmbient
-import androidx.compose.ui.platform.DensityAmbient
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
@@ -37,7 +35,7 @@ import kotlin.math.sign
 open class CardStackController(
     clock: AnimationClockObservable,
     private val screenWidth: Float,
-    internal val animationSpec: AnimationSpec<Float> = SwipeableConstants.DefaultAnimationSpec
+    internal val animationSpec: AnimationSpec<Float> = SwipeableDefaults.AnimationSpec
 ) {
     /**
      * Whether the state is currently animating.
@@ -86,13 +84,12 @@ open class CardStackController(
      */
     val scale = AnimatedFloatModel(0.8f, animationClockProxy)
 
-    var onSwipeLeft : () -> Unit = {}
-    var onSwipeRight: () -> Unit = {}
+    var onSwipe : (direction : Swipe.Direction) -> Unit = {}
 
 
     fun swipeLeft(){
         offsetX.animateTo(-screenWidth, animationSpec) { endReason, endOffset ->
-            onSwipeLeft()
+            onSwipe(Swipe.Direction.LEFT)
             // After the animation of swiping return back to Center to make it look like a cycle
             offsetX.snapTo(center.x)
             offsetY.snapTo(0f)
@@ -104,7 +101,7 @@ open class CardStackController(
 
     fun swipeRight(){
         offsetX.animateTo(screenWidth, animationSpec) { endReason, endOffset ->
-            onSwipeRight()
+            onSwipe(Swipe.Direction.RIGHT)
             // After the animation return back to Center to make it look like a cycle
             offsetX.snapTo(center.x)
             offsetY.snapTo(0f)
@@ -132,9 +129,9 @@ open class CardStackController(
 fun rememberCardStackController(
         animationSpec: AnimationSpec<Float> = SwipeableConstants.DefaultAnimationSpec,
 ): CardStackController {
-    val clock = AnimationClockAmbient.current.asDisposableClock()
-    val screenWidth = with(DensityAmbient.current){
-        ConfigurationAmbient.current.screenWidthDp.dp.toPx()
+    val clock = AmbientAnimationClock.current.asDisposableClock()
+    val screenWidth = with(AmbientDensity.current){
+        AmbientConfiguration.current.screenWidthDp.dp.toPx()
     }
     return remember {
         CardStackController(

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.*
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.setContent
+import com.luminarlab.ui.cardstack.CardContent
 import com.luminarlab.ui.cardstack.CardStack
 import com.luminarlab.ui.cardstack.Item
 
@@ -38,8 +39,10 @@ class MainActivity : AppCompatActivity(){
             CardStack(
                 modifier = Modifier,
                 enableButtons = true,
-                items = items
-            )
+                items = items,
+            ) {
+                CardContent(item = it)
+            }
         }
     }
 }
