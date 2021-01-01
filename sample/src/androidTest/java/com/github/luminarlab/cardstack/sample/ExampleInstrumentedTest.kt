@@ -1,4 +1,4 @@
-package io.github.davidec00.cardstack
+package com.github.luminarlab.cardstack
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

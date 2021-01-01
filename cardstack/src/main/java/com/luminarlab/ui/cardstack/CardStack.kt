@@ -1,4 +1,4 @@
-package io.github.davidec00.cardstack
+package com.luminarlab.ui.cardstack
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

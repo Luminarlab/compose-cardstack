@@ -1,4 +1,4 @@
-package io.github.davidec00.cardstack
+package com.github.luminarlab.cardstack
 
 import org.junit.Test
 

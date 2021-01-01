@@ -1,14 +1,12 @@
-package io.github.davidec00.cardstack.sample
+package com.luminarlab.ui.cardstack.sample
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.setContent
-import androidx.compose.ui.unit.dp
-import io.github.davidec00.cardstack.CardStack
-import io.github.davidec00.cardstack.Item
+import com.luminarlab.ui.cardstack.CardStack
+import com.luminarlab.ui.cardstack.Item
 
 class MainActivity : AppCompatActivity(){
     @ExperimentalMaterialApi

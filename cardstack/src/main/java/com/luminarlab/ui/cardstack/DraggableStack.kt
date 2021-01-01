@@ -1,4 +1,4 @@
-package io.github.davidec00.cardstack
+package com.luminarlab.ui.cardstack
 
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.asDisposableClock
