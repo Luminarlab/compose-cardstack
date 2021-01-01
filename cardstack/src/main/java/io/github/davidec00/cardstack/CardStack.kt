@@ -1,30 +1,24 @@
 package io.github.davidec00.cardstack
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.ThresholdConfig
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ThumbDownAlt
 import androidx.compose.material.icons.filled.ThumbUpAlt
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawShadow
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlin.math.roundToInt
 
@@ -44,20 +38,21 @@ import kotlin.math.roundToInt
  */
 @ExperimentalMaterialApi
 @Composable
-fun CardStack(modifier : Modifier = Modifier,
-              items: MutableList<Item>,
-              thresholdConfig: (Float, Float) -> ThresholdConfig = { _, _ -> FractionalThreshold(0.2f) },
-              velocityThreshold: Dp = 125.dp,
-              enableButtons: Boolean = false,
-              onSwipeLeft : ( item : Item) -> Unit = {},
-              onSwipeRight : ( item : Item) ->  Unit = {},
-              onEmptyStack : ( lastItem : Item) -> Unit = {}
-){
+fun CardStack(
+    modifier: Modifier = Modifier,
+    items: MutableList<Item>,
+    thresholdConfig: (Float, Float) -> ThresholdConfig = { _, _ -> FractionalThreshold(0.2f) },
+    velocityThreshold: Dp = 125.dp,
+    enableButtons: Boolean = false,
+    onSwipeLeft: (item: Item) -> Unit = {},
+    onSwipeRight: (item: Item) -> Unit = {},
+    onEmptyStack: (lastItem: Item) -> Unit = {}
+) {
 
-    var i by remember { mutableStateOf(items.size-1)}
+    var i by remember { mutableStateOf(items.size - 1) }
 
-    if( i == -1 ){
-        onEmptyStack( items.last() )
+    if (i == -1) {
+        onEmptyStack(items.last())
     }
 
     val cardStackController = rememberCardStackController()
@@ -73,28 +68,29 @@ fun CardStack(modifier : Modifier = Modifier,
     ConstraintLayout(modifier = modifier.fillMaxSize().padding(20.dp)) {
         val (buttons, stack) = createRefs()
 
-        if(enableButtons){
-            Row( modifier = Modifier
+        if (enableButtons) {
+            Row(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .constrainAs(buttons){
+                    .constrainAs(buttons) {
                         bottom.linkTo(parent.bottom)
                         top.linkTo(stack.bottom)
                     },
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-            ){
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 FloatingActionButton(
-                        onClick = { if (i >= 0) cardStackController.swipeLeft() },
-                        backgroundColor = Color.White,
-                        elevation = 5.dp
+                    onClick = { if (i >= 0) cardStackController.swipeLeft() },
+                    backgroundColor = Color.White,
+                    elevation = FloatingActionButtonDefaults.elevation()
                 ) {
                     Icon(Icons.Filled.ThumbDownAlt, tint = Color.Red)
                 }
-                Spacer( modifier = Modifier.width(70.dp))
+                Spacer(modifier = Modifier.width(70.dp))
                 FloatingActionButton(
-                        onClick = { if (i >= 0) cardStackController.swipeRight() },
-                        backgroundColor = Color.White,
-                        elevation = 5.dp
+                    onClick = { if (i >= 0) cardStackController.swipeRight() },
+                    backgroundColor = Color.White,
+                    elevation = FloatingActionButtonDefaults.elevation()
                 ) {
                     Icon(Icons.Filled.ThumbUpAlt, tint = Color.Green)
                 }
@@ -102,30 +98,31 @@ fun CardStack(modifier : Modifier = Modifier,
         }
 
         Box(modifier = Modifier
-                .constrainAs(stack){
-                    top.linkTo(parent.top)
-                }
-                .draggableStack(
-                        controller = cardStackController,
-                        thresholdConfig = thresholdConfig,
-                        velocityThreshold = velocityThreshold
-                )
-                .fillMaxHeight(0.8f)
-        ){
-            items.asReversed().forEachIndexed{ index, item ->
-                Card(modifier = Modifier
+            .constrainAs(stack) {
+                top.linkTo(parent.top)
+            }
+            .draggableStack(
+                controller = cardStackController,
+                thresholdConfig = thresholdConfig,
+                velocityThreshold = velocityThreshold
+            )
+            .fillMaxHeight(0.8f)
+        ) {
+            items.asReversed().forEachIndexed { index, item ->
+                Card(
+                    modifier = Modifier
                         .moveTo(
-                                x = if (index == i) cardStackController.offsetX.value else 0f,
-                                y = if (index == i) cardStackController.offsetY.value else 0f
+                            x = if (index == i) cardStackController.offsetX.value else 0f,
+                            y = if (index == i) cardStackController.offsetY.value else 0f
                         )
-                        .visible( visible = index == i || index == i - 1)
-                        .drawLayer(
-                                rotationZ = if (index == i) cardStackController.rotation.value else 0f,
-                                scaleX = if (index < i) cardStackController.scale.value else 1f,
-                                scaleY = if (index < i) cardStackController.scale.value else 1f
+                        .visible(visible = index == i || index == i - 1)
+                        .graphicsLayer(
+                            rotationZ = if (index == i) cardStackController.rotation.value else 0f,
+                            scaleX = if (index < i) cardStackController.scale.value else 1f,
+                            scaleY = if (index < i) cardStackController.scale.value else 1f
                         )
-                        .drawShadow(4.dp, RoundedCornerShape(10.dp)),
-                        item
+                        .shadow(4.dp, RoundedCornerShape(10.dp)),
+                    item
                 )
             }
         }
@@ -134,65 +131,74 @@ fun CardStack(modifier : Modifier = Modifier,
 
 @Composable
 fun Card(
-        modifier: Modifier = Modifier,
-        item: Item = Item()
-){
+    modifier: Modifier = Modifier,
+    item: Item = Item()
+) {
     Box(
-            modifier
-    ){
-        if(item.url != null){
+        modifier
+    ) {
+        if (item.url != null) {
             CoilImage(
-                    data = item.url,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(10.dp)),
+                data = item.url,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(10.dp)),
             )
         }
-        Column(modifier = Modifier
+        Column(
+            modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(10.dp)
-        ){
-            Text(text = item.text,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp,
-                    modifier = Modifier.clickable(onClick = {}, indication = null) // disable the highlight of the text when dragging
+        ) {
+            androidx.compose.material.Text(
+                text = item.text,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 25.sp,
+                modifier = Modifier.clickable(
+                    onClick = {},
+                    indication = null
+                ) // disable the highlight of the text when dragging
             )
-            Text(text = item.subText,
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    modifier = Modifier.clickable(onClick = {}, indication = null) // disable the highlight of the text when dragging
+            androidx.compose.material.Text(
+                text = item.subText,
+                color = Color.White,
+                fontSize = 20.sp,
+                modifier = Modifier.clickable(
+                    onClick = {},
+                    indication = null
+                ) // disable the highlight of the text when dragging
             )
         }
     }
 }
 
 data class Item(
-        val url: String? = null,
-        val text: String = "",
-        val subText: String = ""
+    val url: String? = null,
+    val text: String = "",
+    val subText: String = ""
 )
 
 fun Modifier.moveTo(
     x: Float,
     y: Float
-) = this.then(Modifier.layout{measurable, constraints ->
+) = this.then(Modifier.layout { measurable, constraints ->
     val placeable = measurable.measure(constraints)
-    layout(placeable.width, placeable.height){
-        placeable.placeRelative(x.roundToInt(),y.roundToInt())
+    layout(placeable.width, placeable.height) {
+        placeable.placeRelative(x.roundToInt(), y.roundToInt())
     }
 })
 
 fun Modifier.visible(
-        visible: Boolean = true
-) = this.then(Modifier.layout{measurable, constraints ->
+    visible: Boolean = true
+) = this.then(Modifier.layout { measurable, constraints ->
     val placeable = measurable.measure(constraints)
-    if(visible){
-        layout(placeable.width, placeable.height){
-            placeable.placeRelative(0,0)
+    if (visible) {
+        layout(placeable.width, placeable.height) {
+            placeable.placeRelative(0, 0)
         }
-    }else{
+    } else {
         layout(0, 0) {}
     }
 })

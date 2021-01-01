@@ -18,7 +18,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.gesture.DragObserver
 import androidx.compose.ui.gesture.rawDragGestureFilter
-import androidx.compose.ui.onPositioned
+import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.platform.AnimationClockAmbient
 import androidx.compose.ui.platform.ConfigurationAmbient
 import androidx.compose.ui.platform.DensityAmbient
@@ -160,7 +160,7 @@ fun Modifier.draggableStack(
     thresholdConfig: (Float, Float) -> ThresholdConfig,
     velocityThreshold: Dp = 125.dp
 ) = composed {
-    val density = DensityAmbient.current
+    val density = AmbientDensity.current
     val velocityThresholdPx = with(density) { velocityThreshold.toPx() }
     val thresholds = { a: Float, b: Float ->
         with(thresholdConfig(a,b)){
@@ -203,7 +203,7 @@ fun Modifier.draggableStack(
             canStartDragging = {!controller.isAnimationRunning}
     )
 
-    draggable.onPositioned { }
+    draggable
 }
 
 /**

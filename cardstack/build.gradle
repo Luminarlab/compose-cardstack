@@ -5,13 +5,13 @@ plugins {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -34,11 +34,17 @@ android {
 
     buildFeatures {
         compose = true
+
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+        useIR = true
     }
 
     composeOptions {
-        kotlinCompilerVersion = "1.4.0"
-        kotlinCompilerExtensionVersion = "1.0.0-alpha04"
+        kotlinCompilerVersion = kotlin_version
+        kotlinCompilerExtensionVersion = composeVersion
     }
 
     packagingOptions {
@@ -55,12 +61,10 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
 }
 
 dependencies {
-    def kotlin_version = "1.4.0"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "dev.chrisbanes.accompanist:accompanist-coil:0.2.1"
+    implementation "dev.chrisbanes.accompanist:accompanist-coil:0.4.0"
 
-    def composeVersion = "1.0.0-alpha04"
 
     implementation "androidx.compose.animation:animation:$composeVersion"
     implementation "androidx.compose.foundation:foundation:$composeVersion"
@@ -68,7 +72,6 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended:$composeVersion"
     implementation "androidx.compose.runtime:runtime:$composeVersion"
     implementation "androidx.compose.ui:ui:$composeVersion"
-
 
 
 }
