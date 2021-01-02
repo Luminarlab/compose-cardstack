@@ -21,7 +21,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode libraryVersionCode
         versionName libraryVersion
@@ -77,6 +77,31 @@ dependencies {
     implementation "androidx.compose.ui:ui:$composeVersion"
 
 
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId libraryGroupId
+            //You can either define these here or get them from project conf elsewhere
+            artifactId libraryArtifactId
+            version libraryVersion
+            artifact "$buildDir/outputs/aar/cardstack-release.aar" //aar artifact you want to publish
+
+            //generate pom nodes for dependencies
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.each { dependency ->
+                    if (dependency.group != null) {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', dependency.group)
+                        dependencyNode.appendNode('artifactId', dependency.name)
+                        dependencyNode.appendNode('version', dependency.version)
+                    }
+                }
+            }
+        }
+    }
 }
 
 tasks.withType(GenerateModuleMetadata) {
