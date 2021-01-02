@@ -9,22 +9,21 @@
 
 ## Description
 Use swipeable cards like Tinder Cards in Jetpack Compose.
-This project was originally forked from [DavideC00](https://github.com/davideC00/CardStack)
+This project was originally forked from [DavideC00](https://github.com/davideC00/CardStack) and changed to support the latest compose version and be more generic.
 
 ## Overview
 ![MainGif](./docs/cardstack.gif)
 
 ## Installation
-[![](https://jitpack.io/v/THEAccess/compose-cardstack.svg)](https://jitpack.io/#THEAccess/compose-shimmer)
+ Latest version: [ ![Download](https://api.bintray.com/packages/luminarlab/compose-cardstack/compose-cardstack/images/download.svg) ](https://bintray.com/luminarlab/compose-cardstack/compose-cardstack/_latestVersion)
 
-Available through jitpack.
 
-Add the maven repo to your root `build.gradle`
+Add the maven repo to your root `build.gradle` (If you haven't already)
 
 ```groovy
 allprojects {
     repositories {
-        maven { url 'https://jitpack.io' }
+       jcenter()
     }
 }
 ```
@@ -32,9 +31,31 @@ allprojects {
 Add the dependency:
 ```groovy
 dependencies {
-    implementation 'com.github.THEAccess:compose-cardstack:1.0.1'
+    implementation 'com.luminarlab.ui:compose-cardstack:{latest_version}'
 }
 ```
+
+## Usage
+A simple use case
+```kotlin
+//EmptyStack() and CardContent() are custom composables and not included in the library
+ CardStack(
+                modifier = Modifier,
+                items = items,
+                empty = {
+                    EmptyStack()
+                },
+                buttons = {
+                    CardStackButtons()
+                }
+            ) { item, index ->
+                SwipeableCard(index = index) {
+                    CardContent(item = item)
+                }
+            }
+```
+See more in the example app
+
 
 ## Contributing
 Any contribution is appreciated
