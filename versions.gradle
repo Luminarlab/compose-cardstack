@@ -1,0 +1,8 @@
+ext {
+    libraryGroupId = 'com.luminarlab.ui'
+    libraryArtifactId = 'compose-cardstack'
+    libraryVersion = '1.0.1'
+    libraryVersionCode = 1
+    kotlin_version = "1.4.21"
+    composeVersion = "1.0.0-alpha09"
+}

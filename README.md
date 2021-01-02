@@ -8,14 +8,33 @@
 - [Contributing](#contributing)
 
 ## Description
-Use SwipeableCard like Tinder Cards in Jetpack Compose.
+Use swipeable cards like Tinder Cards in Jetpack Compose.
 This project was originally forked from [DavideC00](https://github.com/davideC00/CardStack)
 
 ## Overview
 ![MainGif](./docs/cardstack.gif)
 
 ## Installation
-Maybe in the future it will be published on jcenter but for now it's still too buggy
+[![](https://jitpack.io/v/THEAccess/compose-cardstack.svg)](https://jitpack.io/#THEAccess/compose-shimmer)
+
+Available through jitpack.
+
+Add the maven repo to your root `build.gradle`
+
+```groovy
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+Add the dependency:
+```groovy
+dependencies {
+    implementation 'com.github.THEAccess:compose-cardstack:1.0.1'
+}
+```
 
 ## Contributing
 Any contribution is appreciated
