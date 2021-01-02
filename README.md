@@ -1,5 +1,5 @@
 # CardStack
-![Compose Version](https://img.shields.io/badge/Jetpack%20Compose-1.0.0--alpha04-brightgreen)
+![Compose Version](https://img.shields.io/badge/Jetpack%20Compose-1.0.0--alpha09-brightgreen)
 
 ## Table of contents
 - [Description](#description)
@@ -8,7 +8,8 @@
 - [Contributing](#contributing)
 
 ## Description
-Just a fun made version of the Tinder Cards using the newest tool Jetpack Compose
+Use SwipeableCard like Tinder Cards in Jetpack Compose.
+This project was originally forked from [DavideC00](https://github.com/davideC00/CardStack)
 
 ## Overview
 ![MainGif](./docs/cardstack.gif)
@@ -17,4 +18,4 @@ Just a fun made version of the Tinder Cards using the newest tool Jetpack Compos
 Maybe in the future it will be published on jcenter but for now it's still too buggy
 
 ## Contributing
-Any contributing is appreciated
+Any contribution is appreciated

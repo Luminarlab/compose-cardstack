@@ -41,6 +41,9 @@ class MainActivity : AppCompatActivity() {
             CardStack(
                 modifier = Modifier,
                 items = items,
+                empty = {
+                    EmptyStack()
+                },
                 buttons = {
                     CardStackButtons()
                 }

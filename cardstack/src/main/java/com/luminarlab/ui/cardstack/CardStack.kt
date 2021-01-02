@@ -35,56 +35,56 @@ fun <T> CardStack(
     onSwipe: (item: T, index: Int, direction: Swipe.Direction) -> Unit = { _, _, _ -> },
     onEmptyStack: (lastItem: T) -> Unit = {},
     buttons: @Composable CardStackScope.() -> Unit = {},
+    empty: @Composable () -> Unit = {},
     content: @Composable CardStackScope.(item: T, index: Int) -> Unit
 ) {
 
-    var currentIndex by remember { mutableStateOf(items.size - 1) }
 
-    val cardStackController = rememberCardStackController()
+    val csc = rememberCardStackController()
+    val scope by remember { mutableStateOf(CardStackScope(items.size - 1, csc)) }
+    scope.apply {
 
-    val scope = CardStackScope(currentIndex, cardStackController)
-
-    if (currentIndex == -1) {
-        onEmptyStack(items.last())
-    }
+        if (isEmpty) onEmptyStack(items.last())
 
 
-    cardStackController.onSwipe = { direction ->
-        onSwipe(items[currentIndex], items.size - currentIndex, direction)
-        currentIndex--
-    }
-
-
-    ConstraintLayout(modifier = modifier.fillMaxSize().padding(20.dp)) {
-        val (buttonsRef, stack) = createRefs()
-
-
-        Box(modifier = Modifier
-            .constrainAs(buttonsRef) {
-                this.bottom.linkTo(parent.bottom)
-                top.linkTo(stack.bottom)
-            }) {
-            scope.buttons()
+        cardStackController.onSwipe = { direction ->
+            onSwipe(items[currentIndex], items.size - currentIndex, direction)
+            currentIndex--
         }
 
 
-        Box(modifier = Modifier
-            .constrainAs(stack) {
-                top.linkTo(parent.top)
-            }
-            .draggableStack(
-                controller = cardStackController,
-                thresholdConfig = thresholdConfig,
-                velocityThreshold = velocityThreshold
-            )
-            .fillMaxHeight(0.8f)
-        ) {
-            items.asReversed().forEachIndexed { index, item ->
+        ConstraintLayout(modifier = modifier.fillMaxSize().padding(20.dp)) {
+            val (buttonsRef, stack) = createRefs()
 
-                scope.content(item, index)
+
+            Box(modifier = Modifier
+                .constrainAs(buttonsRef) {
+                    this.bottom.linkTo(parent.bottom)
+                    top.linkTo(stack.bottom)
+                }) {
+                buttons()
+            }
+
+
+            Box(modifier = Modifier
+                .constrainAs(stack) {
+                    top.linkTo(parent.top)
+                }
+                .draggableStack(
+                    controller = cardStackController,
+                    thresholdConfig = thresholdConfig,
+                    velocityThreshold = velocityThreshold
+                )
+                .fillMaxHeight(0.8f)
+            ) {
+                if (!isEmpty) items.asReversed().forEachIndexed { index, item ->
+
+                    content(item, index)
+                } else empty()
             }
         }
     }
 }
+
 
 

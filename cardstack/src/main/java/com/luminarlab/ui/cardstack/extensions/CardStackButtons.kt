@@ -1,5 +1,6 @@
 package com.luminarlab.ui.cardstack
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.FloatingActionButtonDefaults
@@ -27,7 +28,10 @@ fun CardStackScope.CardStackButtons(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         FloatingActionButton(
-            onClick = { if (currentIndex >= 0) cardStackController.swipeLeft() },
+            onClick = {
+                Log.d("MOVL", "${this@CardStackButtons}")
+                if (currentIndex >= 0 && !this@CardStackButtons.isEmpty) cardStackController.swipeLeft()
+            },
             backgroundColor = Color.White,
             elevation = FloatingActionButtonDefaults.elevation()
         ) {
@@ -35,7 +39,10 @@ fun CardStackScope.CardStackButtons(modifier: Modifier = Modifier) {
         }
         Spacer(modifier = Modifier.width(70.dp))
         FloatingActionButton(
-            onClick = { if (currentIndex >= 0) cardStackController.swipeRight() },
+            onClick = {
+                Log.d("MOVL", "${this@CardStackButtons}")
+                if (currentIndex >= 0 && !this@CardStackButtons.isEmpty) cardStackController.swipeRight()
+            },
             backgroundColor = Color.White,
             elevation = FloatingActionButtonDefaults.elevation()
         ) {
